@@ -1,0 +1,76 @@
+<odoo>
+    <!-- Parent Menu -->
+    <menuitem id="shopify_sync_menu" name="Shopify Sync" sequence="10"/>
+
+    <!-- Action for Shopify Store model -->
+    <record id="action_shopify_store" model="ir.actions.act_window">
+        <field name="name">Shopify Stores</field>
+        <field name="res_model">shopify.store</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- Menu Item for the Shopify Store -->
+    <menuitem id="shopify_store_menu" name="All Stores" parent="shopify_sync_menu" action="action_shopify_store" sequence="10"/>
+
+    <!-- Enhanced Tree View for Shopify Stores -->
+    <record id="view_shopify_store_tree" model="ir.ui.view">
+        <field name="name">shopify.store.tree</field>
+        <field name="model">shopify.store</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="warehouse_id!=False" decoration-muted="not api_key or not api_password">
+                <field name="name" string="Store Name"/>
+                <field name="shopify_url" string="Shopify URL" widget="url" class="oe_inline"/>
+                <field name="api_key" string="API Key" invisible="1"/> <!-- Hidden for cleaner look -->
+                <field name="api_password" string="API Password" invisible="1"/> <!-- Hidden for cleaner look -->
+                <field name="warehouse_id" string="Warehouse" widget="many2one_avatar"/>
+                <field name="product_last_fetch_date" string="Last Product Sync" widget="datetime" options="{'format': 'short'}"/>
+                <field name="order_last_fetch_date" string="Last Order Sync" widget="datetime" options="{'format': 'short'}"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Enhanced Form View for Shopify Store -->
+    <!-- Shopify Store Form View (Shopify Admin Style) -->
+    <record id="view_shopify_store_form" model="ir.ui.view">
+        <field name="name">shopify.store.form</field>
+        <field name="model">shopify.store</field>
+        <field name="arch" type="xml">
+            <form class="o_form_edit_mode">
+                <header>
+                    <button name="sync_inventory_cron" string="Sync Now" type="object" class="btn-primary" icon="fa-refresh"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g., My Shopify Store" class="oe_inline"/></h1>
+                    </div>
+                    <group>
+                        <group string="Basic Info" col="2">
+                            <field name="shopify_url" placeholder="e.g., mystore.myshopify.com" widget="url"/>
+                            <field name="warehouse_id" options="{'no_quick_create': True}"/>
+                        </group>
+                        <group string="API Credentials" col="2">
+                            <field name="api_key" placeholder="API Key" password="True"/>
+                            <field name="api_password" placeholder="API Password" password="True"/>
+                        </group>
+                        <group string="Sync Status" col="2">
+                            <field name="product_last_fetch_date" widget="datetime" readonly="1"/>
+                            <field name="order_last_fetch_date" widget="datetime" readonly="1"/>
+                        </group>
+                    </group>
+                    <div class="oe_button_box" name="button_box">
+                        <button 
+    class="oe_stat_button" 
+    type="action" 
+    name="odoo_shopify_sync.action_shopify_sync_log" 
+    icon="fa-history" 
+    help="View Sync Logs">
+    <field name="log_count" widget="statinfo" string="Syncs"/>
+</button>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
